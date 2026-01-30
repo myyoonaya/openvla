@@ -43,6 +43,8 @@ This project accomplishes the Fine-tuning and evaluation of the OpenVLA (7B) mod
 
 ## 📊 Evaluation Results
 
+My training configuration is as follows: batch size = 1, gradient accumulation steps = 16, and LoRA rank = 16. The training speed is about 4 s/iteration with approximately 18 GB of GPU memory usage. Fine-tuning for 5,000 steps takes around 6 hours.
+
 | Task Suite | Episodes | Success Rate |
 | :--- | :--- | :--- | :--- |
 | Libero Spatial Task1 | 50 | 10% |
