@@ -102,6 +102,22 @@ def eval_libero(cfg: GenerateConfig) -> None:
 
     # Load model
     model = get_model(cfg)
+    # print("MODEL TYPE:", type(model))
+    # print("Has norm_stats keys:", list(model.norm_stats.keys())[:5], " ... total", len(model.norm_stats))
+    
+    # # PEFT / LoRA 检查（不同实现名字不一样，所以多打几个）
+    # print("Has peft_config:", hasattr(model, "peft_config"))
+    # print("Has active_adapters:", hasattr(model, "active_adapters"))
+    # if hasattr(model, "active_adapters"):
+    #     try:
+    #         print("active_adapters:", model.active_adapters)
+    #     except Exception as e:
+    #         print("active_adapters read err:", e)
+            
+    # # 参数统计：LoRA 正常加载时，通常会有一部分参数 requires_grad=True（或至少存在 lora_ 层）
+    # lora_named = [n for n, _ in model.named_parameters() if "lora" in n.lower()]
+    # print("num lora params:", len(lora_named))
+    # print("sample lora param names:", lora_named[:5])
 
     # [OpenVLA] Check that the model contains the action un-normalization key
     if cfg.model_family == "openvla":
@@ -217,15 +233,40 @@ def eval_libero(cfg: GenerateConfig) -> None:
                     )
 
                     # Normalize gripper action [0,1] -> [-1,+1] because the environment expects the latter
+                    print("get_action g =", action[6])
                     action = normalize_gripper_action(action, binarize=True)
-
+                    print("after normalize g =", action[6])
                     # [OpenVLA] The dataloader flips the sign of the gripper action to align with other datasets
                     # (0 = close, 1 = open), so flip it back (-1 = open, +1 = close) before executing the action
                     if cfg.model_family == "openvla":
                         action = invert_gripper_action(action)
+                        print("after invert g =", action[6])
 
+                    exec_action = action.copy()
+                    print("EXEC action (before scale):", exec_action, "min/max", float(exec_action.min()), float(exec_action.max()))
+
+                    # ✅ 再做你想做的 scale（先只放大平移，不要一上来全乘 10）
+                    
+                    # 只放大 motion（前6维）
+                    amp = float(np.max(np.abs(exec_action[:6]))) + 1e-8
+
+                    target = 0.3   # 建议 0.2~0.4 之间试
+                    scale = target / amp
+
+                    # 不让 scale 太离谱：小动作放大，但上限别让它直接饱和
+                    scale = float(np.clip(scale, 1.0, 50.0))
+
+                    exec_action[:6] *= scale
+
+                    # 仍然clip，但因为target=0.3，一般不会撞到±1
+                    exec_action[:6] = np.clip(exec_action[:6], -1, 1)
+
+                    print("amp", amp, "scale", scale, "absmax_after", float(np.max(np.abs(exec_action[:6]))))
+                    print("EXEC action (after scale):", exec_action, "min/max", float(exec_action.min()), float(exec_action.max()))
+                    
                     # Execute action in environment
-                    obs, reward, done, info = env.step(action.tolist())
+                    obs, reward, done, info = env.step(exec_action.tolist())
+                    print("qpos[0:3]", env.sim.data.qpos[:3].copy())
                     if done:
                         task_successes += 1
                         total_successes += 1
