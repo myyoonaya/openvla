@@ -19,29 +19,34 @@ Fail
 
 https://github.com/user-attachments/assets/717102b1-5762-4e76-bf8a-a8bdb012169a
 
-Loss Curve
+## Loss Curve
 
+<img width="2840" height="1418" alt="image" src="https://github.com/user-attachments/assets/5ebf3339-bd7a-4795-812e-f2e7245ecf75" />
+
+The curve shows an “L-shaped” pattern. It drops rapidly from around 12 at the beginning, and then decreases slowly and steadily to the 2–3 range. The whole process can be divided into:
+
+1. **Rapid decline phase:** indicating the model quickly learned the basic rules of the task (e.g., the rough correspondence between images and actions);
+2. **Gradual decline phase:** the slower decrease later suggests the model is “fine-tuning,” learning more subtle operational details;
+3. **Oscillations:** the small sawtooth-like fluctuations in the curve are completely normal (since the difficulty varies across batches). As long as the overall trend keeps going downward, the training is healthy.
 
 ## 📖 Project Overview
-This project documents the deployment and evaluation of the OpenVLA (7B) model on the Libero-Spatial robot manipulation benchmark. The goal was to validate the model's visual-motor control capabilities in a simulated MuJoCo environment. I have recorded all the related processes in CSDN, [OpenVLA-Learning](https://blog.csdn.net/2303_77547168/article/details/156364335?spm=1011.2415.3001.5331).
+This project accomplishes the Fine-tuning and evaluation of the OpenVLA (7B) model on the Libero-Spatial robot manipulation benchmark. I re-normalized the final action outputs of the VLA model to ensure the actions are within a reasonable range; originally, the VLA’s predicted action magnitudes were so small that it could not complete the task.
 
 ## 🛠️ Environment Setup
-Successfully running the evaluation required solving several dependency conflicts between legacy `gym` and modern `gymnasium` environments.
-
-**Key Dependencies:**
-- Python 3.10
-- CUDA 12.x / PyTorch
-- `gym < 0.26` (Crucial for Libero compatibility)
-- `robosuite` & `libero`
-- `openvla`
+- OS: Ubuntu 22.04
+- Python: 3.10
+- CUDA: 12.1
+- Torch: 2.2.0
+- GPU: RTX 4090
+- OpenVLA base
 
 
 ## 📊 Evaluation Results
 
-| Task Suite | Episodes | Auto-Eval Success Rate | Human-Eval Success Rate |
+| Task Suite | Episodes | Success Rate |
 | :--- | :--- | :--- | :--- |
-| Libero Spatial Task1 | 50 | ~14% | ~26%  |
-| Libero Spatial Task2 | 8 | ~13% | ~63%  |
+| Libero Spatial Task1 | 50 | 10% |
+| Libero Spatial Task2 | 50 | 20% |
 
 
 ## Acknowledgements 
