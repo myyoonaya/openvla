@@ -1,16 +1,16 @@
-# OpenVLA Finetune and Evaluation on Libero Benchmark: A Reproduction Journey
+# OpenVLA Finetune and Evaluation on Libero Spatial Benchmark
 
 ## 🎥 Demos 
 - Task 1
 Success
-(https://github.com/user-attachments/assets/cfc53b0e-e18a-45cd-a768-6cacb226ea37)
+https://github.com/user-attachments/assets/cfc53b0e-e18a-45cd-a768-6cacb226ea37
 Fail
-(https://github.com/user-attachments/assets/39667e83-386a-45a6-af3a-17ecc7844d10)
+https://github.com/user-attachments/assets/39667e83-386a-45a6-af3a-17ecc7844d10
 - Task 2
 Success
-
+https://github.com/user-attachments/assets/9652c4bc-4b5a-4d14-8973-5ded73d3c259
 Fail
-
+https://github.com/user-attachments/assets/717102b1-5762-4e76-bf8a-a8bdb012169a
 
 Loss Curve
 
